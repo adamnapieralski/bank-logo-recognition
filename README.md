@@ -1,2 +1,1 @@
-# adamnapieralski
-bank-logo-recognition
+# bank-logo-recognition
