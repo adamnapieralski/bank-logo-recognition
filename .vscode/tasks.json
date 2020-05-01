@@ -9,7 +9,7 @@
             "command": "make",
             "args": [],
             "options": {
-                "cwd": "${workspaceRoot}"
+                "cwd": "${workspaceRoot}/build"
             },
             "problemMatcher": [
                 "$gcc"
