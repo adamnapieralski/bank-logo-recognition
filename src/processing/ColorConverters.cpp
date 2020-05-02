@@ -8,6 +8,25 @@
 
 #include "../../include/processing/ColorConverters.h"
 
+namespace pobr {
+    cv::Mat cvtColor(cv::Mat& image, ColorConversionType type) {
+        auto converter = ColorConverter::makeColorConverter(type);
+        return converter->convert(image);
+    }
+}
+
+std::shared_ptr<ColorConverter> ColorConverter::makeColorConverter(pobr::ColorConversionType type) {
+    std::shared_ptr<ColorConverter> cvt;
+    switch (type) {
+    case pobr::BRG2HSV:
+        cvt = std::make_shared<BGR2HSVConverter>();
+        break;
+    default:
+        throw(std::out_of_range("Color conversion type not supported"));
+    }
+    return cvt;
+}
+
 cv::Vec3b BGR2HSVConverter::BGR2HSVPixelConverter::convert(const cv::Vec3b& brg) {
     double b = static_cast<double>(brg[0]) / UCHAR_MAX;
     double r = static_cast<double>(brg[1]) / UCHAR_MAX;

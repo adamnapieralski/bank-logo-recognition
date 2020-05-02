@@ -10,12 +10,22 @@
 #define _PROCESSING_COLORCONVERTERS_H_
 
 #include <iostream>
+#include <memory>
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 
+namespace pobr {
+    enum ColorConversionType {
+        BRG2HSV
+    };
+
+    cv::Mat cvtColor(cv::Mat& image, ColorConversionType type);
+}
+
 class ColorConverter {
 public:
+    static std::shared_ptr<ColorConverter> makeColorConverter(pobr::ColorConversionType type);
     virtual cv::Mat convert(cv::Mat& image) = 0;
     virtual ~ColorConverter() {}
 };
@@ -28,6 +38,7 @@ public:
 
 class BGR2HSVConverter : public ColorConverter {
 public:
+    BGR2HSVConverter() {}
     cv::Mat convert(cv::Mat& image) override;
 
 private:

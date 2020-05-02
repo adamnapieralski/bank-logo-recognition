@@ -2,9 +2,9 @@
 
 LogoRecognizer::LogoRecognizer(std::string fileName) {
     sourceImage_ = cv::imread(fileName);
-    BGR2HSVConverter c = BGR2HSVConverter();
-    cv::imshow("Test", c.convert(sourceImage_));
-    // cv::imshow("Test", sourceImage_);
+    auto converted = pobr::cvtColor(sourceImage_, pobr::BRG2HSV);
+    // cv::imshow("Test", c.convert(sourceImage_));
+    cv::imshow("Test", converted);
     cv::waitKey(-1);
     // c.print();
 }
