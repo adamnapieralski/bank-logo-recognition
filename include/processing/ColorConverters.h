@@ -16,27 +16,24 @@
 
 class ColorConverter {
 public:
-    virtual cv::Mat& convert(cv::Mat& image) = 0;
+    virtual cv::Mat convert(cv::Mat& image) = 0;
     virtual ~ColorConverter() {}
 };
 
 class ColorPixelConverter {
 public:
-    virtual cv::Vec3b convert(cv::Vec3b org) = 0;
+    virtual cv::Vec3b convert(const cv::Vec3b& org) = 0;
     virtual ~ColorPixelConverter() {};
 };
 
 class BGR2HSVConverter : public ColorConverter {
 public:
-    cv::Mat& convert(cv::Mat& image) override;
-    void print();
+    cv::Mat convert(cv::Mat& image) override;
 
 private:
     class BGR2HSVPixelConverter : public ColorPixelConverter {
     public:
-        cv::Vec3b convert(cv::Vec3b bgr) override;
-    private:
-    
+        cv::Vec3b convert(const cv::Vec3b& bgr) override;    
     } pixelConverter_;
 };
 

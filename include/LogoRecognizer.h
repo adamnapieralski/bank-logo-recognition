@@ -21,12 +21,10 @@ class LogoRecognizer {
 public:
     LogoRecognizer(std::string fileName);
 
-    void testThresholdTrackbar();
-
 
 
 private:
-    cv::Mat_<cv::Vec3b> sourceImage_;
+    cv::Mat sourceImage_;
 };
 
 /**

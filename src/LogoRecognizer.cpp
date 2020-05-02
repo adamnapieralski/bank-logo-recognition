@@ -1,8 +1,10 @@
 #include "../include/LogoRecognizer.h"
 
 LogoRecognizer::LogoRecognizer(std::string fileName) {
-    auto image = cv::imread(fileName);
-    sourceImage_ = image;
+    sourceImage_ = cv::imread(fileName);
     BGR2HSVConverter c = BGR2HSVConverter();
-    c.print();
+    cv::imshow("Test", c.convert(sourceImage_));
+    // cv::imshow("Test", sourceImage_);
+    cv::waitKey(-1);
+    // c.print();
 }
