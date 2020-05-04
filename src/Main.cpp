@@ -7,6 +7,6 @@
 
 int main(int, char**)
 {   
-    auto lr = LogoRecognizer("data/logo_stripe2.jpg");
+    auto lr = LogoRecognizer("data/img5.png");
     return 0;
 }

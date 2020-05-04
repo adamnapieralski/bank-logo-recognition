@@ -27,10 +27,10 @@ std::shared_ptr<ColorConverter> ColorConverter::makeColorConverter(pobr::ColorCo
     return cvt;
 }
 
-cv::Vec3b BGR2HSVConverter::BGR2HSVPixelConverter::convert(const cv::Vec3b& brg) {
-    double b = static_cast<double>(brg[0]) / UCHAR_MAX;
-    double r = static_cast<double>(brg[1]) / UCHAR_MAX;
-    double g = static_cast<double>(brg[2]) / UCHAR_MAX;
+cv::Vec3b BGR2HSVConverter::BGR2HSVPixelConverter::convert(const cv::Vec3b& bgr) {
+    double b = static_cast<double>(bgr[0]) / UCHAR_MAX;
+    double g = static_cast<double>(bgr[1]) / UCHAR_MAX;
+    double r = static_cast<double>(bgr[2]) / UCHAR_MAX;
 
     double cmax = std::max(b, std::max(g, r));
     double cmin = std::min(b, std::min(g, r));

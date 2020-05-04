@@ -16,6 +16,7 @@
 #include "opencv2/highgui.hpp"
 
 #include "processing/ColorConverters.h"
+#include "processing/Binarization.h"
 
 class LogoRecognizer {
 public:

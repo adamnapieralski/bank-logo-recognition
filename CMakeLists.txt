@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-11")
 
 find_package(OpenCV REQUIRED)
 
-file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.cpp src/processing/*.cpp include/*.h include/processing/*.h)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.cpp src/processing/*.cpp include/*.h include/processing/*.h include/processing/*.hpp)
 add_executable(main ${sources})
 target_include_directories(main PUBLIC include PRIVATE src)
 
