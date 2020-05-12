@@ -17,6 +17,7 @@
 
 #include "processing/ColorConverters.h"
 #include "processing/Binarization.h"
+#include "processing/Segmentation.h"
 
 class LogoRecognizer {
 public:
