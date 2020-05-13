@@ -25,7 +25,9 @@ public:
     void setFileName(std::string fileName);
 
     void colorOnImage(cv::Mat& image, const cv::Vec3b& color);
-    bool isInNeighbourhood(const Segment& seg);
+    bool hasInNeighbourhood(const Segment& seg, double proximity, bool isOtherSeg=false) const;
+
+    void merge(const Segment& seg);
 
 private:
     void retrievePoints(cv::Mat& mat);
@@ -62,8 +64,6 @@ private:
     cv::Point2i geomCenter_;
 
     cv::Rect2i rectBorder_;
-    double neighbourhoodRadiusMultiplicant_ = 2.;
-    double neighbourhoodRadius_;
 
     std::vector<std::vector<double>> m_;
     std::vector<std::vector<double>> M_;

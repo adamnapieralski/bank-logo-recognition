@@ -5,10 +5,10 @@
  * @author Adam Napieralski
  * @date 05.2020
  */
-
+#include <unordered_set>
 #include "../../include/processing/Segmentation.h"
 
-std::vector<Segment> pobr::retrieveSegments(const cv::Mat& image, const cv::Vec3b& val) {
+std::vector<Segment> pobr::retrieveSegments(const cv::Mat& image, const int minArea, const cv::Vec3b& val) {
     std::vector<Segment> segments;
     cv::Mat_<cv::Vec3b> img = image.clone();
 
@@ -17,8 +17,11 @@ std::vector<Segment> pobr::retrieveSegments(const cv::Mat& image, const cv::Vec3
             cv::Point2i origin(j, i);
             if (img(origin) == val) {
                 auto seg = retrieveSingleSegment(img, origin);
+                seg.calculateParameters();
                 seg.colorOnImage(img, consts::BINARY_PIXEL_BLACK);
-                segments.push_back(seg);
+                if (seg.getArea() > minArea) {
+                    segments.push_back(seg);
+                }
             }
         }
     }
@@ -53,8 +56,35 @@ Segment pobr::retrieveSingleSegment(const cv::Mat& image, const cv::Point2i& ori
             allPoints.push_back(p);
         }
     }
+
     return Segment(allPoints);
 }
+
+std::vector<Segment> pobr::mergeCloseSegments(std::vector<Segment> segments, double proximityRatio) {
+    std::vector<Segment> merged;
+    std::unordered_set<int> mergedNums;
+    for (int i = 0; i < segments.size() - 1; ++i) {
+        bool wasMerged = false;
+        for (int j = i + 1; j < segments.size(); ++j) {
+            auto seg = segments.at(i);
+            if (seg.hasInNeighbourhood(segments.at(j), proximityRatio)){
+                segments.at(j).merge(segments.at(i));
+                wasMerged = true;
+                mergedNums.insert(j);
+                mergedNums.erase(i);
+                break;
+            }
+        }
+        if (!wasMerged) {
+            mergedNums.insert(i);
+        }
+    }
+    for (auto& i : mergedNums) {
+        merged.push_back(segments.at(i));
+    }
+    return merged;
+}
+
 
 std::deque<cv::Point2i> pobr::getNeighbors4p(const cv::Point2i& origin, const cv::Rect2i& size) {
     std::deque<cv::Point2i> nbs;

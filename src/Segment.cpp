@@ -1,4 +1,5 @@
 #include "../include/Segment.h"
+#include "../include/processing/Utils.hpp"
 
 // Segment::Segment(cv::Vec3b colorValue, cv::Mat& mat) {
 //     colorValue_ = colorValue;
@@ -81,12 +82,23 @@ void Segment::setFileName(std::string fileName) {
     fileName_ = fileName;
 }
 
-bool Segment::isInNeighbourhood(const Segment& seg) {
-    auto dist = cv::norm(seg.geomCenter_ - geomCenter_);
-    if (dist < neighbourhoodRadius_ && dist < seg.neighbourhoodRadius_) {
-        return true;
+bool Segment::hasInNeighbourhood(const Segment& seg, double proximity, bool isOtherSeg) const {
+    auto dist = pobr::utils::euclideanDistance<int>(seg.geomCenter_, geomCenter_);
+    auto neighbourhoodRadius = proximity * pobr::utils::euclideanDistance<int>(rectBorder_.tl(), rectBorder_.br());
+    if (dist < neighbourhoodRadius) {
+        if (isOtherSeg) {
+            return true;
+        }
+        else if (seg.hasInNeighbourhood(*this, proximity, true)) {
+            return true;
+        }
     }
     return false;
+}
+
+void Segment::merge(const Segment& seg) {
+    points_.insert(points_.end(), seg.points_.begin(), seg.points_.end());
+    calculateParameters();
 }
 
 
@@ -136,7 +148,6 @@ void Segment::calculate_rectBorder() {
         if (point.y < yMin) yMin = point.y;
     }
     rectBorder_ = cv::Rect2i(cv::Point2i(xMin, yMin), cv::Point2i(xMax, yMax));
-    neighbourhoodRadius_ = neighbourhoodRadiusMultiplicant_ * cv::norm(rectBorder_.br() - rectBorder_.tl());
 }
 
 void Segment::calculate_angle() {
@@ -194,7 +205,7 @@ void Segment::calculateParameters() {
     calculate_NM();
 }
 
-void Segment::markImg() {https://www.google.com/search?q=otoczy%C4%87+po+angielsku&oq=otoczy%C4%87+po+an&aqs=chrome.1.69i57j0l7.4364j1j9&sourceid=chrome&ie=UTF-8
+void Segment::markImg() {
     cv::Mat_<cv::Vec3b> marked = imgMarked_;
     for (auto& p : points_) {
         marked(p) = cv::Vec3b(255, 0, 0);
