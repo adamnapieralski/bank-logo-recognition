@@ -10,6 +10,8 @@ public:
     Segment();
     Segment(std::vector<cv::Point2i> points);
 
+    void calculateParameters();
+
     int getPerimeter() const;
     int getArea() const;
     double getAngleDegrees() const;
@@ -17,22 +19,24 @@ public:
     double getNM(int n) const;
     cv::Mat getImgMarked() const;
 
+    cv::Point2i getGeomCenter() const;
+    cv::Point2i getMassCenter() const;
+
     void setFileName(std::string fileName);
 
-    std::string getTask1DataString() const;
-    std::string getTask2DataString() const;
-
     void colorOnImage(cv::Mat& image, const cv::Vec3b& color);
+    bool isInNeighbourhood(const Segment& seg);
 
 private:
     void retrievePoints(cv::Mat& mat);
-    void calculateParameters();
+
 
     bool isEdgePoint(const cv::Point2i& p, const cv::Mat_<cv::Vec3b>& mat) const;
     void calculate_W3();
     double calculate_mpq(int p, int q);
     void calculate_massCenter();
     void calculate_geomCenter();
+    void calculate_rectBorder();
     void calculate_angle();
     void calculate_m();
     void calculate_M();
@@ -56,6 +60,10 @@ private:
 
     cv::Point2i massCenter_;
     cv::Point2i geomCenter_;
+
+    cv::Rect2i rectBorder_;
+    double neighbourhoodRadiusMultiplicant_ = 2.;
+    double neighbourhoodRadius_;
 
     std::vector<std::vector<double>> m_;
     std::vector<std::vector<double>> M_;

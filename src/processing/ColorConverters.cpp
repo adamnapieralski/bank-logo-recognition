@@ -13,12 +13,18 @@ namespace pobr {
         auto converter = ColorConverter::makeColorConverter(type);
         return converter->convert(image);
     }
+    
+    cv::Vec3b cvtColor(cv::Vec3b& vec, ColorConversionType type) {
+        auto converter = ColorConverter::makeColorConverter(type);
+        return converter->convert(vec);
+    }
+
 }
 
 std::shared_ptr<ColorConverter> ColorConverter::makeColorConverter(pobr::ColorConversionType type) {
     std::shared_ptr<ColorConverter> cvt;
     switch (type) {
-    case pobr::BRG2HSV:
+    case pobr::BGR2HSV:
         cvt = std::make_shared<BGR2HSVConverter>();
         break;
     default:
@@ -28,43 +34,51 @@ std::shared_ptr<ColorConverter> ColorConverter::makeColorConverter(pobr::ColorCo
 }
 
 cv::Vec3b BGR2HSVConverter::BGR2HSVPixelConverter::convert(const cv::Vec3b& bgr) {
-    double b = static_cast<double>(bgr[0]) / UCHAR_MAX;
-    double g = static_cast<double>(bgr[1]) / UCHAR_MAX;
-    double r = static_cast<double>(bgr[2]) / UCHAR_MAX;
+    auto b = static_cast<double>(bgr[0]) / UCHAR_MAX;
+    auto g = static_cast<double>(bgr[1]) / UCHAR_MAX;
+    auto r = static_cast<double>(bgr[2]) / UCHAR_MAX;
 
-    double cmax = std::max(b, std::max(g, r));
-    double cmin = std::min(b, std::min(g, r));
+    auto cmax = std::max(b, std::max(g, r));
+    auto cmin = std::min(b, std::min(g, r));
     double diff = cmax - cmin;
-    int h = -1, s = -1;
-    int v = cmax * UCHAR_MAX;
+    double h = 0., s = 0.;
 
-    if (cmax == cmin) {
-        h = 0;
-    }
-    else if (cmax == r) {
-        h = static_cast<int>(round(((60 * static_cast<int>((g - b) / diff) + 360) % 360) / 2));
-    }
-    else if (cmax == g) {
-        h = static_cast<int>(round(((60 * static_cast<int>((b - r) / diff) + 120) % 360) / 2));
-    }
-    else if (cmax == b) {
-        h = static_cast<int>(round(((60 * static_cast<int>((r - g) / diff) + 240) % 360) / 2));
-    }
-    if (cmax == 0) {
-        s = 0;
-    }
-    else {
-        s = (diff / cmax) * UCHAR_MAX;
-    }
+    double v = cmax;
 
+    if (diff > 10e-8) {
+        if (cmax > 0.) {
+            s = diff / cmax;
+        }
+        if (r >= cmax) {
+            h = (g - b) / diff;
+        }
+        else if (g >= cmax) {
+            h = 2. + (b - r) / diff;
+        }
+        else {
+            h = 4. + (r - g) / diff;
+        }
+
+        h *= 60.;
+
+        if ( h < 0.) {
+            h += 360.;
+        }
+    }
+    s *= UCHAR_MAX;
+    v *= UCHAR_MAX;
+    h /= 2.;
     return cv::Vec3b(h, s, v);
 }
 
-cv::Mat BGR2HSVConverter::convert(cv::Mat& imageBRG) {
-    cv::Mat imageHSV = imageBRG.clone();
+cv::Mat BGR2HSVConverter::convert(cv::Mat& imageBGR) {
+    cv::Mat imageHSV = imageBGR.clone();
     imageHSV.forEach<cv::Vec3b>([&](cv::Vec3b& px, const int position[]) {
         px = pixelConverter_.convert(px);
     });
     return imageHSV;
 }
 
+cv::Vec3b BGR2HSVConverter::convert(cv::Vec3b& vec) {
+    return pixelConverter_.convert(vec);
+}

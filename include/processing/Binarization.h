@@ -19,6 +19,7 @@
 namespace pobr {
     bool isPixelInRange(const cv::Vec3b& pixel, const cv::Vec3b& lowerBound, const cv::Vec3b& upperBound);
     cv::Mat inRange(const cv::Mat& image, const cv::Vec3b& lowerBound, const cv::Vec3b& upperBound);
+    cv::Mat unite(const cv::Mat& image1, const cv::Mat& image2);
 }
 
 

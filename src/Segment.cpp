@@ -69,30 +69,27 @@ cv::Mat Segment::getImgMarked() const {
     return imgMarked_;
 }
 
+cv::Point2i Segment::getGeomCenter() const {
+    return geomCenter_;
+}
+
+cv::Point2i Segment::getMassCenter() const {
+    return massCenter_;
+}
+
 void Segment::setFileName(std::string fileName) {
     fileName_ = fileName;
 }
 
+bool Segment::isInNeighbourhood(const Segment& seg) {
+    auto dist = cv::norm(seg.geomCenter_ - geomCenter_);
+    if (dist < neighbourhoodRadius_ && dist < seg.neighbourhoodRadius_) {
+        return true;
+    }
+    return false;
+}
 
-std::string Segment::getTask1DataString() const {
-    std::string data = "Plik " + fileName_
-                        + ", S=" + std::to_string(getArea())
-                        + ", L=" + std::to_string(getPerimeter())
-                        + ", W3=" + std::to_string(getW3())
-                        + ", M1=" + std::to_string(getNM(1))
-                        + ", M7=" + std::to_string(getNM(7));
-    return data;
-}
-std::string Segment::getTask2DataString() const {
-    std::string data = "Strzalka R=" + std::to_string(colorValue_[2])
-                        + ", nachylenie " + std::to_string(getAngleDegrees())
-                        + ", S=" + std::to_string(getArea())
-                        + ", L=" + std::to_string(getPerimeter())
-                        + ", W3=" + std::to_string(getW3())
-                        + ", M1=" + std::to_string(getNM(1))
-                        + ", M7=" + std::to_string(getNM(7));
-    return data;
-}
+
 
 void Segment::calculate_W3() {
     W3_ = static_cast<double>(perimeter_) / (2*sqrt(M_PI * area_)) - 1;
@@ -123,6 +120,10 @@ void Segment::calculate_massCenter() {
 }
 
 void Segment::calculate_geomCenter() {
+    geomCenter_ = cv::Point2d(rectBorder_.tl() + rectBorder_.br()) / 2.;
+}
+
+void Segment::calculate_rectBorder() {
     int xMin = points_.at(0).x;
     int xMax = xMin;
     int yMin = points_.at(0).y;
@@ -134,7 +135,8 @@ void Segment::calculate_geomCenter() {
         if (point.y > yMax) yMax = point.y;
         if (point.y < yMin) yMin = point.y;
     }
-    geomCenter_ = cv::Point2d((xMax + xMin) / 2., (yMax + yMin) / 2.);
+    rectBorder_ = cv::Rect2i(cv::Point2i(xMin, yMin), cv::Point2i(xMax, yMax));
+    neighbourhoodRadius_ = neighbourhoodRadiusMultiplicant_ * cv::norm(rectBorder_.br() - rectBorder_.tl());
 }
 
 void Segment::calculate_angle() {
@@ -185,13 +187,14 @@ void Segment::calculateParameters() {
     calculate_W3();
     calculate_m();
     calculate_massCenter();
+    calculate_rectBorder();
     calculate_geomCenter();
     calculate_angle();
     calculate_M();
     calculate_NM();
 }
 
-void Segment::markImg() {
+void Segment::markImg() {https://www.google.com/search?q=otoczy%C4%87+po+angielsku&oq=otoczy%C4%87+po+an&aqs=chrome.1.69i57j0l7.4364j1j9&sourceid=chrome&ie=UTF-8
     cv::Mat_<cv::Vec3b> marked = imgMarked_;
     for (auto& p : points_) {
         marked(p) = cv::Vec3b(255, 0, 0);
