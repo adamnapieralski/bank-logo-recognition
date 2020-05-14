@@ -9,6 +9,7 @@ public:
     // Segment(cv::Vec3b colorValue, cv::Mat& mat);
     Segment();
     Segment(std::vector<cv::Point2i> points);
+    Segment(std::vector<cv::Point2i> points, std::vector<cv::Point2i> edgePoints);
 
     void calculateParameters();
 
@@ -22,15 +23,15 @@ public:
     cv::Point2i getGeomCenter() const;
     cv::Point2i getMassCenter() const;
 
-    void setFileName(std::string fileName);
-
     void colorOnImage(cv::Mat& image, const cv::Vec3b& color);
     bool hasInNeighbourhood(const Segment& seg, double proximity, bool isOtherSeg=false) const;
+
+    void printCharacteristics();
 
     void merge(const Segment& seg);
 
 private:
-    void retrievePoints(cv::Mat& mat);
+    // void retrievePoints(cv::Mat& mat);
 
 
     bool isEdgePoint(const cv::Point2i& p, const cv::Mat_<cv::Vec3b>& mat) const;
@@ -39,6 +40,7 @@ private:
     void calculate_massCenter();
     void calculate_geomCenter();
     void calculate_rectBorder();
+    void calculate_perimeter();
     void calculate_angle();
     void calculate_m();
     void calculate_M();

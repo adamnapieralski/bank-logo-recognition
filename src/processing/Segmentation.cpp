@@ -30,6 +30,7 @@ std::vector<Segment> pobr::retrieveSegments(const cv::Mat& image, const int minA
 
 Segment pobr::retrieveSingleSegment(const cv::Mat& image, const cv::Point2i& origin) {
     std::vector<cv::Point2i> allPoints = {origin};
+    std::vector<cv::Point2i> edgePoints = {origin};
     std::deque<cv::Point2i> lastPoints = {origin};
     cv::Mat_<cv::Vec3b> img = image.clone();
     cv::Vec3b colorVal = img(origin);
@@ -54,15 +55,19 @@ Segment pobr::retrieveSingleSegment(const cv::Mat& image, const cv::Point2i& ori
         }
         for (auto& p : lastPoints) {
             allPoints.push_back(p);
+            if (isEdgePoint(p, colorVal, image)) {
+                edgePoints.push_back(p);
+            }
         }
     }
 
-    return Segment(allPoints);
+    return Segment(allPoints, edgePoints);
 }
 
 std::vector<Segment> pobr::mergeCloseSegments(std::vector<Segment> segments, double proximityRatio) {
     std::vector<Segment> merged;
     std::unordered_set<int> mergedNums;
+    if (segments.size() == 1) mergedNums.insert(0);
     for (int i = 0; i < segments.size() - 1; ++i) {
         bool wasMerged = false;
         for (int j = i + 1; j < segments.size(); ++j) {
@@ -77,6 +82,9 @@ std::vector<Segment> pobr::mergeCloseSegments(std::vector<Segment> segments, dou
         }
         if (!wasMerged) {
             mergedNums.insert(i);
+            if (i == segments.size() - 2) {
+                mergedNums.insert(i + 1);
+            }
         }
     }
     for (auto& i : mergedNums) {
@@ -108,3 +116,18 @@ std::deque<cv::Point2i> pobr::getNeighbors4p(const std::deque<cv::Point2i> origi
     }
     return nbs;
 }
+
+bool pobr::isEdgePoint(const cv::Point2i& p, const cv::Vec3b& color, const cv::Mat_<cv::Vec3b>& mat) {
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            cv::Point2i nb = p + cv::Point2i(j, i);
+            cv::Rect2i matRect = cv::Rect2i(0, 0, mat.cols, mat.rows);
+            if (nb == p || !nb.inside(matRect)) continue;
+            if (mat(p) == color && mat(nb) != color) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+

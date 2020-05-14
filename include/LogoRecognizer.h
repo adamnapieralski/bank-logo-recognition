@@ -19,9 +19,29 @@
 #include "processing/Binarization.h"
 #include "processing/Segmentation.h"
 
+enum class ColorPiece {
+    RED, GREEN, YELLOW
+};
+
 class LogoRecognizer {
 public:
     LogoRecognizer(std::string fileName);
+
+    std::vector<Segment> colorPieceClassification(std::vector<Segment> segments, ColorPiece color);
+
+private:
+    std::vector<std::pair<double, double>> yellowRanges_{
+        {0.75, 1.75}, {0.18, 0.38}, {0.005, 0.022}
+    };
+
+    std::vector<std::pair<double, double>> greenRanges_{
+        {0.45, 2.51}, {0.18, 0.34}, {0.007, 0.12}
+    };
+
+    std::vector<std::pair<double, double>> redRanges_{
+        {0.66, 1.85}, {0.21, 0.28}, {0.011, 0.014}
+    };
+    
 
 
 

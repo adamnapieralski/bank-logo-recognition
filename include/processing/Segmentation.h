@@ -17,4 +17,6 @@ namespace pobr {
     std::vector<Segment> mergeCloseSegments(std::vector<Segment> segments, double proximityRatio);
     std::deque<cv::Point2i> getNeighbors4p(const cv::Point2i& origin, const cv::Rect2i& size);
     std::deque<cv::Point2i> getNeighbors4p(const std::deque<cv::Point2i> origins, const cv::Rect2i& size);
+    bool isEdgePoint(const cv::Point2i& p, const cv::Vec3b& color, const cv::Mat_<cv::Vec3b>& mat);
+
 }

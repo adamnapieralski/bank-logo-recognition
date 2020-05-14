@@ -18,6 +18,14 @@ namespace utils {
     double euclideanDistance(cv::Point_<T> p1, cv::Point_<T> p2) {
         return sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
     }
+
+    template<typename T>
+    bool inRange(T val, std::pair<T, T> range) {
+        if (val >= range.first && val <= range.second) {
+            return true;
+        }
+        return false;
+    }
 }
 }
 
