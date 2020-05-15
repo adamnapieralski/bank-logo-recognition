@@ -25,7 +25,7 @@ enum class ColorSegment {
 
 class LogoRecognizer {
 public:
-    LogoRecognizer(std::string fileName, bool isStageSaving=false);
+    LogoRecognizer(std::string fileName, bool isStagesSaving=false);
 
     void performRecognition();
 

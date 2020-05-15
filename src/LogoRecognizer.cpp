@@ -3,13 +3,15 @@
 
 #include <fstream>
 
-LogoRecognizer::LogoRecognizer(std::string fileName, bool isStageSaving) {
+LogoRecognizer::LogoRecognizer(std::string fileName, bool isStagesSaving) {
+    sourceImage_ = cv::imread(fileName);
+    if (!sourceImage_.data) {
+        throw std::runtime_error("Empty image");
+    }
     filename_ = fileName;
     filenameBase_ = pobr::utils::getBaseFileName(fileName);
     filePathNoExtension_ = pobr::utils::getPathWithoutExtension(fileName);
-    std::cout << filePathNoExtension_ << std::endl;
-    sourceImage_ = cv::imread(fileName);
-    isStagesSaving_ = isStagesSaving_;
+    isStagesSaving_ = isStagesSaving;
 }
 
 void LogoRecognizer::performRecognition() {
@@ -105,7 +107,7 @@ std::map<ColorSegment, std::vector<Segment>> LogoRecognizer::findAllColorsSegmen
             }
         }
         colorThresholdMarkedImgs_.insert({color, coloredImg});
-        if (isStagesSaving_)    std::cout << std::endl;
+        if (isStagesSaving_) std::cout << std::endl;
 
         allColorsSegments.insert({ color, colorSegments });
     }
