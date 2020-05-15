@@ -7,9 +7,12 @@ LogoRecognizer::LogoRecognizer(std::string fileName) {
 
     auto colorSegs = findAllColorsSegments(sourceImage_);
     auto logos = findLogos(colorSegs);
+    // for (auto& logo : logos) {
+    //     cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
+    //     logo.colorOnImage(sourceImage_, color);
+    // }
     for (auto& logo : logos) {
-        cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-        logo.colorOnImage(sourceImage_, color);
+        logo.markBorderOnImage(sourceImage_, cv::Vec3b(0, 0, 255));
     }
     cv::imshow("Logos", sourceImage_);
     cv::waitKey(-1);

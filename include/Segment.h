@@ -24,6 +24,7 @@ public:
     cv::Point2i getMassCenter() const;
 
     void colorOnImage(cv::Mat& image, const cv::Vec3b& color);
+    void markBorderOnImage(cv::Mat& image, const cv::Vec3b& color);
     bool hasInNeighbourhood(const Segment& seg, double proximity, bool isOtherSeg=false) const;
 
     void printCharacteristics();

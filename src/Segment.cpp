@@ -111,6 +111,7 @@ Segment Segment::mergeOut(const Segment& seg) {
 
     merged.edgePoints_.insert(merged.edgePoints_.end(), edgePoints_.begin(), edgePoints_.end());
     merged.edgePoints_.insert(merged.edgePoints_.end(), seg.edgePoints_.begin(), seg.edgePoints_.end());
+    merged.calculateParameters();
     return merged;
 }
 
@@ -250,6 +251,19 @@ void Segment::colorOnImage(cv::Mat& image, const cv::Vec3b& color) {
     }
     for (auto& p : edgePoints_) {
         colorImg(p) = cv::Vec3b(0, 0, 255);
+    }
+    image = colorImg;
+}
+
+void Segment::markBorderOnImage(cv::Mat& image, const cv::Vec3b& color) {
+    cv::Mat_<cv::Vec3b> colorImg = image.clone();
+    for (int i = rectBorder_.tl().y; i <= rectBorder_.br().y; ++i) {
+        colorImg(i, rectBorder_.tl().x) = color;
+        colorImg(i, rectBorder_.br().x) = color;
+    }
+    for (int i = rectBorder_.tl().x; i <= rectBorder_.br().x; ++i) {
+        colorImg(rectBorder_.tl().y, i) = color;
+        colorImg(rectBorder_.br().y, i) = color;
     }
     image = colorImg;
 }
