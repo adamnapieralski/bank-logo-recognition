@@ -1,55 +1,23 @@
 #include "../include/LogoRecognizer.h"
 #include "../include/processing/Utils.hpp"
 
+#include <fstream>
 
-LogoRecognizer::LogoRecognizer(std::string fileName) {
+LogoRecognizer::LogoRecognizer(std::string fileName, bool isStageSaving) {
+    filename_ = fileName;
+    filenameBase_ = pobr::utils::getBaseFileName(fileName);
+    filePathNoExtension_ = pobr::utils::getPathWithoutExtension(fileName);
+    std::cout << filePathNoExtension_ << std::endl;
     sourceImage_ = cv::imread(fileName);
+    isStagesSaving_ = isStagesSaving_;
+}
 
+void LogoRecognizer::performRecognition() {
     auto colorSegs = findAllColorsSegments(sourceImage_);
-    auto logos = findLogos(colorSegs);
-    // for (auto& logo : logos) {
-    //     cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-    //     logo.colorOnImage(sourceImage_, color);
-    // }
-    for (auto& logo : logos) {
-        logo.markBorderOnImage(sourceImage_, cv::Vec3b(0, 0, 255));
-    }
-    cv::imshow("Logos", sourceImage_);
+    foundLogos_ = findLogos(colorSegs);
+    saveOutputData();
+    cv::imshow("Output", sourceMarkedImg_);
     cv::waitKey(-1);
-
-    // auto converted = pobr::cvtColor(sourceImage_, pobr::BGR2HSV);
-    // findAllColorsSegments(sourceImage_);
-    // // // red
-    // auto threshold = pobr::inRange(converted, cv::Vec3b(150, 110, 90), cv::Vec3b(179, 255, 255));
-    // auto threshold2 = pobr::inRange(converted, cv::Vec3b(0, 110, 90), cv::Vec3b(3, 255, 255));
-    // threshold = pobr::unite(threshold, threshold2);
-
-    // // // green
-    // // auto threshold = pobr::inRange(converted, cv::Vec3b(25, 70, 80), cv::Vec3b(87, 255, 255));
-    
-
-    // // yellow
-    // // auto threshold = pobr::inRange(converted, cv::Vec3b(9, 60, 80), cv::Vec3b(22, 255, 255));
-
-    // auto segments = pobr::retrieveSegments(threshold, 250);
-    // std::cout << segments.size() << "\t";
-    // // auto segmentsMerged = pobr::mergeCloseSegments(segments, 0.4);
-    // auto segmentsMerged = segments;
-    // // std::cout << segmentsMerged.size() << "\n";
-
-    // // auto yellowSegments = colorPieceClassification(segmentsMerged, ColorPiece::YELLOW);
-
-    // // auto greenSegments = colorPieceClassification(segmentsMerged, ColorPiece::GREEN);
-
-    // auto redSegments = findColorSegments(segmentsMerged, ColorSegment::RED);
-    // for (auto& seg : redSegments) {
-    //     seg.printCharacteristics();
-    //     cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-    //     seg.colorOnImage(threshold, color);
-    // }
-    // std::cout << std::endl;
-    // cv::imshow("Test" + fileName, threshold);
-
 }
 
 std::vector<Segment> LogoRecognizer::findLogos(std::map<ColorSegment, std::vector<Segment>> colorSegments) {
@@ -66,6 +34,14 @@ std::vector<Segment> LogoRecognizer::findLogos(std::map<ColorSegment, std::vecto
             }
         }
     }
+
+    allColorsThresholdImg_ = cv::Mat(sourceImage_.size(), CV_8UC3, pobr::consts::BINARY_PIXEL_BLACK);
+    sourceMarkedImg_ = sourceImage_.clone();
+    for (auto& logo : logos) {
+        logo.colorOnImage(allColorsThresholdImg_, pobr::utils::randomColor());
+        logo.markBorderOnImage(sourceMarkedImg_, cv::Vec3b(0, 0, UCHAR_MAX));
+    }
+
     return logos;
 }
 
@@ -107,24 +83,67 @@ std::map<ColorSegment, std::vector<Segment>> LogoRecognizer::findAllColorsSegmen
         for (auto& ranges : colorThresholdRanges_.at(color)) {
             threshold = pobr::unite(threshold, pobr::inRange(hsvImg, ranges.first, ranges.second));
         }
+        colorThresholdImgs_.insert({color, threshold});
+
         auto segments = pobr::retrieveSegments(threshold, minSegmentSizes_.at(color));
         if (colorMergeProximities_.at(color) > pobr::consts::EPS) {
             segments = pobr::mergeCloseSegments(segments, colorMergeProximities_.at(color));
         }
         auto colorSegments = findColorSegments(segments, color);
+
+        cv::Mat coloredImg(threshold.size(), CV_8UC3, pobr::consts::BINARY_PIXEL_BLACK);
+        
+        if (isStagesSaving_) {
+            std::cout << "Found " + getColorSegmentName(color) + " color segments: " << std::endl;
+        }
+
+        for (auto& seg : colorSegments) {
+            seg.colorOnImage(coloredImg, pobr::utils::randomColor());
+            if (isStagesSaving_) {
+                std::cout << "Center: " << seg.getGeomCenter() << "\t";
+                seg.printCharacteristics();
+            }
+        }
+        colorThresholdMarkedImgs_.insert({color, coloredImg});
+        if (isStagesSaving_)    std::cout << std::endl;
+
         allColorsSegments.insert({ color, colorSegments });
-
-        // for (auto& seg : colorSegments) {
-        //     cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
-        //     seg.colorOnImage(threshold, color);
-        //     seg.printCharacteristics();
-        // }
-        // std::cout << std::endl << std::endl;
-        // // if (color == ColorSegment::GREEN) {
-        //     cv::imshow("Segments", threshold);
-        //     cv::waitKey(-1);
-        // // }
-
     }
     return allColorsSegments;
+}
+
+std::string LogoRecognizer::getColorSegmentName(ColorSegment color) {
+    switch (color) {
+    case ColorSegment::RED:
+        return "red";
+        break;
+    case ColorSegment::YELLOW:
+        return "yellow";
+        break;
+    case ColorSegment::GREEN:
+        return "green";
+        break;
+    }
+}
+
+void LogoRecognizer::saveOutputData() {
+    if (isStagesSaving_) {
+        for (auto& color : colorsNames_) {
+            cv::imwrite(filePathNoExtension_ + "_thresh_" + getColorSegmentName(color) + ".png", colorThresholdImgs_.at(color));
+            cv::imwrite(filePathNoExtension_ + "_thresh_colored_" + getColorSegmentName(color) + ".png", colorThresholdMarkedImgs_.at(color));
+        }
+        cv::imwrite(filePathNoExtension_ + "_thresh_all_colored.png", allColorsThresholdImg_);
+
+        std::ofstream outfile;
+        outfile.open(filePathNoExtension_ + "_out_log.txt");
+        outfile << "Found logos data\nid\tx\ty\tw\th\n";
+        for (size_t i = 0; i < foundLogos_.size(); ++i) {
+            outfile << i << "\t" << foundLogos_.at(i).getRectBorder().x << "\t"
+            << foundLogos_.at(i).getRectBorder().y << "\t"
+            << foundLogos_.at(i).getRectBorder().width << "\t"
+            << foundLogos_.at(i).getRectBorder().height << "\n";
+        }
+        outfile.close();
+    }
+    cv::imwrite(filePathNoExtension_ + "_marked_out.png", sourceMarkedImg_);
 }

@@ -7,12 +7,9 @@
 
 int main(int, char**)
 {   
-    // auto lr = LogoRecognizer("data/logo.jpg");
-    for (int i = 1; i < 5; ++i) {
-        auto lr = LogoRecognizer("data/default/img" + std::to_string(i) + ".png");
-        // auto lr = LogoRecognizer("data/default/img" + std::to_string(i) + "_logos.png");
+    for (int i = 1; i < 2; ++i) {
+        auto lr = LogoRecognizer("data/img" + std::to_string(i) + ".png", true);
+        lr.performRecognition();
     }
-    cv::waitKey(-1);
-    // auto lr = LogoRecognizer("data/logo_stripe2.jpg");
     return 0;
 }

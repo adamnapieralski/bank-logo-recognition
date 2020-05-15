@@ -25,13 +25,18 @@ enum class ColorSegment {
 
 class LogoRecognizer {
 public:
-    LogoRecognizer(std::string fileName);
+    LogoRecognizer(std::string fileName, bool isStageSaving=false);
+
+    void performRecognition();
 
     std::vector<Segment> findColorSegments(std::vector<Segment> segments, ColorSegment color);
     std::map<ColorSegment, std::vector<Segment>> findAllColorsSegments(const cv::Mat& image);
     std::vector<Segment> findLogos(std::map<ColorSegment, std::vector<Segment>> colorSegments); 
 
 private:
+    std::string getColorSegmentName(ColorSegment color);
+
+    void saveOutputData();
 
     std::vector<ColorSegment> colorsNames_{
         ColorSegment::RED, ColorSegment::GREEN, ColorSegment::YELLOW
@@ -74,22 +79,20 @@ private:
         { ColorSegment::RED, 0}
     };
 
-
-private:
     cv::Mat sourceImage_;
-};
 
-/**
- * NOTES ON COLORS :
- * HSV
- * - red : H 7.8/360    S 78,9/100  V 84,2 / 100
- * - yellow : H 31,5    S 80,7      V 92,1
- * - green : H 105,6    S 64,4      V 57,5
- * red: (0, 243 229), (3, 241, 205)
- * yellow: (18 ,255 , 244)
- * green: ( 66, 212, 160)
- * 
- * 
- */
+    bool isStagesSaving_;
+
+    std::string filename_;
+    std::string filenameBase_;
+    std::string filePathNoExtension_;
+
+    std::map<ColorSegment, cv::Mat> colorThresholdImgs_;
+    std::map<ColorSegment, cv::Mat> colorThresholdMarkedImgs_;
+    cv::Mat allColorsThresholdImg_;
+    cv::Mat sourceMarkedImg_;
+
+    std::vector<Segment> foundLogos_;
+};
 
 #endif //_LOGORECOGNIZER_H_
