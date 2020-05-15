@@ -18,6 +18,8 @@ namespace pobr::consts {
 
     const cv::Vec3b BINARY_PIXEL_WHITE = cv::Vec3b(WHITE, WHITE, WHITE);
     const cv::Vec3b BINARY_PIXEL_BLACK = cv::Vec3b(BLACK, BLACK, BLACK);
+
+    const double EPS = 10e-8;
 }
 
 #endif //_PROCESSING_CONSTS_HPP_

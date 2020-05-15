@@ -9,12 +9,12 @@
 #include "../../include/processing/ColorConverters.h"
 
 namespace pobr {
-    cv::Mat cvtColor(cv::Mat& image, ColorConversionType type) {
+    cv::Mat cvtColor(const cv::Mat& image, ColorConversionType type) {
         auto converter = ColorConverter::makeColorConverter(type);
         return converter->convert(image);
     }
     
-    cv::Vec3b cvtColor(cv::Vec3b& vec, ColorConversionType type) {
+    cv::Vec3b cvtColor(const cv::Vec3b& vec, ColorConversionType type) {
         auto converter = ColorConverter::makeColorConverter(type);
         return converter->convert(vec);
     }
@@ -71,7 +71,7 @@ cv::Vec3b BGR2HSVConverter::BGR2HSVPixelConverter::convert(const cv::Vec3b& bgr)
     return cv::Vec3b(h, s, v);
 }
 
-cv::Mat BGR2HSVConverter::convert(cv::Mat& imageBGR) {
+cv::Mat BGR2HSVConverter::convert(const cv::Mat& imageBGR) {
     cv::Mat imageHSV = imageBGR.clone();
     imageHSV.forEach<cv::Vec3b>([&](cv::Vec3b& px, const int position[]) {
         px = pixelConverter_.convert(px);
@@ -79,6 +79,6 @@ cv::Mat BGR2HSVConverter::convert(cv::Mat& imageBGR) {
     return imageHSV;
 }
 
-cv::Vec3b BGR2HSVConverter::convert(cv::Vec3b& vec) {
+cv::Vec3b BGR2HSVConverter::convert(const cv::Vec3b& vec) {
     return pixelConverter_.convert(vec);
 }

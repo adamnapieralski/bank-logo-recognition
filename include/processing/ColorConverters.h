@@ -20,15 +20,15 @@ namespace pobr {
         BGR2HSV
     };
 
-    cv::Mat cvtColor(cv::Mat& image, ColorConversionType type);
-    cv::Vec3b cvtColor(cv::Vec3b& vec, ColorConversionType type);
+    cv::Mat cvtColor(const cv::Mat& image, ColorConversionType type);
+    cv::Vec3b cvtColor(const cv::Vec3b& vec, ColorConversionType type);
 }
 
 class ColorConverter {
 public:
     static std::shared_ptr<ColorConverter> makeColorConverter(pobr::ColorConversionType type);
-    virtual cv::Mat convert(cv::Mat& image) = 0;
-    virtual cv::Vec3b convert(cv::Vec3b& vec) = 0;
+    virtual cv::Mat convert(const cv::Mat& image) = 0;
+    virtual cv::Vec3b convert(const cv::Vec3b& vec) = 0;
     virtual ~ColorConverter() {}
 };
 
@@ -41,8 +41,8 @@ public:
 class BGR2HSVConverter : public ColorConverter {
 public:
     BGR2HSVConverter() {}
-    cv::Mat convert(cv::Mat& image) override;
-    cv::Vec3b convert(cv::Vec3b& vec) override;
+    cv::Mat convert(const cv::Mat& image) override;
+    cv::Vec3b convert(const cv::Vec3b& vec) override;
 
 private:
     class BGR2HSVPixelConverter : public ColorPixelConverter {
