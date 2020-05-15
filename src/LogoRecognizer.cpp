@@ -6,6 +6,13 @@ LogoRecognizer::LogoRecognizer(std::string fileName) {
     sourceImage_ = cv::imread(fileName);
 
     auto colorSegs = findAllColorsSegments(sourceImage_);
+    auto logos = findLogos(colorSegs);
+    for (auto& logo : logos) {
+        cv::Vec3b color(rand() % 255, rand() % 255, rand() % 255);
+        logo.colorOnImage(sourceImage_, color);
+    }
+    cv::imshow("Logos", sourceImage_);
+    cv::waitKey(-1);
 
     // auto converted = pobr::cvtColor(sourceImage_, pobr::BGR2HSV);
     // findAllColorsSegments(sourceImage_);
@@ -42,7 +49,22 @@ LogoRecognizer::LogoRecognizer(std::string fileName) {
 
 }
 
-std::vector<Segment> findLogos(std::map<ColorSegment, std::vector<Segment>> colorSegments); 
+std::vector<Segment> LogoRecognizer::findLogos(std::map<ColorSegment, std::vector<Segment>> colorSegments) {
+    std::vector<Segment> logos;
+    
+    for (auto& redSeg : colorSegments.at(ColorSegment::RED)) {
+        for (auto& yellowSeg : colorSegments.at(ColorSegment::YELLOW)) {
+            for (auto& greenSeg : colorSegments.at(ColorSegment::GREEN)) {
+                if (redSeg.hasInNeighbourhood(yellowSeg, 1.5)) {
+                    if (yellowSeg.hasInNeighbourhood(greenSeg, 1.5)) {
+                        logos.push_back(redSeg.mergeOut(yellowSeg.mergeOut(greenSeg)));
+                    }
+                }
+            }
+        }
+    }
+    return logos;
+}
 
 
 std::vector<Segment> LogoRecognizer::findColorSegments(std::vector<Segment> segments, ColorSegment color) {
@@ -56,6 +78,7 @@ std::vector<Segment> LogoRecognizer::findColorSegments(std::vector<Segment> segm
         break;
     case ColorSegment::RED:
         ranges = redRanges_;
+        break;
     }
     std::vector<Segment> pieces;
     for (auto& seg : segments) {
@@ -94,10 +117,10 @@ std::map<ColorSegment, std::vector<Segment>> LogoRecognizer::findAllColorsSegmen
         //     seg.printCharacteristics();
         // }
         // std::cout << std::endl << std::endl;
-        // if (color == ColorSegment::RED) {
+        // // if (color == ColorSegment::GREEN) {
         //     cv::imshow("Segments", threshold);
         //     cv::waitKey(-1);
-        // }
+        // // }
 
     }
     return allColorsSegments;

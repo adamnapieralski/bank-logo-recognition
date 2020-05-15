@@ -28,7 +28,8 @@ public:
 
     void printCharacteristics();
 
-    void merge(const Segment& seg);
+    void mergeIn(const Segment& seg);
+    Segment mergeOut(const Segment& seg);
 
 private:
     // void retrievePoints(cv::Mat& mat);

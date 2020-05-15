@@ -73,7 +73,7 @@ std::vector<Segment> pobr::mergeCloseSegments(std::vector<Segment> segments, dou
         for (int j = i + 1; j < segments.size(); ++j) {
             auto seg = segments.at(i);
             if (seg.hasInNeighbourhood(segments.at(j), proximityRatio)){
-                segments.at(j).merge(segments.at(i));
+                segments.at(j).mergeIn(segments.at(i));
                 wasMerged = true;
                 mergedNums.insert(j);
                 mergedNums.erase(i);

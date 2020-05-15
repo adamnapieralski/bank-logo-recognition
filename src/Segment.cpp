@@ -98,10 +98,20 @@ void Segment::printCharacteristics() {
     printf("Area: %d\t Perim.: %d\tW3: %.1lf\tM1: %.6lf\tM3: %.1lf\tM7: %.6lf\n", area_, perimeter_, W3_, getNM(1), getNM(3), getNM(7));
 }
 
-void Segment::merge(const Segment& seg) {
+void Segment::mergeIn(const Segment& seg) {
     points_.insert(points_.end(), seg.points_.begin(), seg.points_.end());
     edgePoints_.insert(edgePoints_.end(), seg.edgePoints_.begin(), seg.edgePoints_.end());
     calculateParameters();
+}
+
+Segment Segment::mergeOut(const Segment& seg) {
+    Segment merged;
+    merged.points_.insert(merged.points_.end(), points_.begin(), points_.end());
+    merged.points_.insert(merged.points_.end(), seg.points_.begin(), seg.points_.end());
+
+    merged.edgePoints_.insert(merged.edgePoints_.end(), edgePoints_.begin(), edgePoints_.end());
+    merged.edgePoints_.insert(merged.edgePoints_.end(), seg.edgePoints_.begin(), seg.edgePoints_.end());
+    return merged;
 }
 
 // void Segment::calculate_perimeter() {

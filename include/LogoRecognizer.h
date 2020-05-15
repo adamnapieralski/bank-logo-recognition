@@ -69,7 +69,7 @@ private:
     };
 
     std::map<ColorSegment, double> colorMergeProximities_{
-        { ColorSegment::YELLOW, 2. },
+        { ColorSegment::YELLOW, 1.5 },
         { ColorSegment::GREEN, 0 },
         { ColorSegment::RED, 0}
     };
