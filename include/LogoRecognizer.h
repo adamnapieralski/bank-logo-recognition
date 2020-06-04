@@ -1,6 +1,6 @@
 /**
  * @file LogoRecognizer.h
- * @brief
+ * @brief Header file for main class handling mBank logo recognition process using processing utilities provided.
  * 
  * @author Adam Napieralski
  * @date 05.2020
@@ -18,6 +18,7 @@
 #include "processing/ColorConverters.h"
 #include "processing/Binarization.h"
 #include "processing/Segmentation.h"
+#include "processing/Filtering.h"
 
 enum class ColorSegment {
     RED, GREEN, YELLOW

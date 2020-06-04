@@ -1,5 +1,5 @@
 /**
- * @file Binarization.h
+ * @file Binarization.cpp
  * @brief
  * 
  * @author Adam Napieralski

@@ -1,0 +1,139 @@
+\documentclass[11pt,a4paper,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+
+\usepackage{graphicx}
+\usepackage{subcaption} % obrazki obok siebie
+%\usepackage[caption=false]{subfig} % obrazki nad sobą
+\usepackage{wrapfig} 
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{listings}
+%\geometry{lmargin=3cm,rmargin=2cm, tmargin=2.5cm, bmargin=2.5cm} %marginesy w pracy inż/mgr
+\geometry{lmargin=2.5cm,rmargin=2.5cm, tmargin=2.5cm, bmargin=2.5cm} %marginesy ogólne
+\usepackage{multirow} % scalanie wierszy tabeli
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{} % wszystkie nagłówki puste
+%\fancyhead[RE,LO]{ Absolwenci Wydziału Prawa  2012}
+\fancyfoot{} % wszystkie stopki puste
+\fancyfoot[LE,RO]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+%\renewcommand{\footrulewidth}{0.4pt}
+
+\usepackage[hidelinks]{hyperref}% nazwy odsyłaczy
+
+%unikanie myślników dzielących słowa między liniami
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\makeatletter
+\renewcommand{\ALG@name}{Algorytm}
+\renewcommand{\figurename}{Wykres}
+
+\usepackage{enumitem}
+\setitemize{itemsep=1pt,topsep=1pt,parsep=1pt,partopsep=1pt} %odstępy wyliczanych elementów (-)
+
+% \usepackage{indentfirst} % wcięcie w pierwszym akapicie (pod)rozdziału
+\setlength\parindent{0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% zawijanie tekstu w tabelach zgodnie z życzeniem
+\usepackage{stackengine}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setstackEOL{\#}
+\setstackgap{L}{12pt}
+%%%
+
+\usepackage{amsfonts} % zbiory liczba (np. naturalnych)
+\usepackage{amsmath} %duże klamry
+\usepackage{bbm} %skok jednostkowy
+\usepackage[titletoc,title]{appendix} % dodatki - zmiana wyświetlania nagłówka
+\pagenumbering{gobble}
+\usepackage{afterpage} % pusta strona
+\usepackage{tabularx}
+
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{array}
+\newcolumntype{L}{>{\centering\arraybackslash}m{0.11\textwidth}}
+\def\rot{\rotatebox}
+
+\newcommand{\ten}[1]{$\cdot 10^{#1}$}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{enumitem}
+\renewcommand{\figurename}{Rys.}
+
+
+\begin{document}
+\pagenumbering{arabic}
+\begin{center}
+% \vspace*{3\baselineskip}
+\LARGE{PRZETWARZANIE CYFROWE OBRAZÓW}\\
+\LARGE{(POBR)}
+\\
+\vspace*{0.5\baselineskip}
+{\LARGE{Projekt - rozpoznawanie loga mBanku}}
+\\
+\vspace*{0.5\baselineskip}
+{\large{
+Napieralski Adam
+}}\\
+\vspace*{0.5\baselineskip}
+\large{\today}
+\end{center}
+
+\section{Temat projektu}
+\input{tex/1-section}
+
+\section{Wykorzystane narzędzia}
+\input{tex/2-section}
+
+\section{Charakterystyka wybranego logo}
+\input{tex/3-section}
+
+\section{Akwizycja obrazów wejściowych}
+\input{tex/4-section.tex}
+
+\section{Zarys algorytmu przetwarzania}
+\input{tex/5-section}
+
+\section{Przetwarzanie wstępne}
+\input{tex/6-section.tex}
+
+\section{Konwersja przestrzeni barw}
+\input{tex/7-section}
+
+\section{Segmentacja}
+\input{tex/8-section}
+
+\section{Identyfikacja}
+\input{tex/9-section}
+
+\section{Uzyskane wyniki}
+\input{tex/10-section}
+
+\newpage
+
+
+
+
+
+\begin{thebibliography}{9}
+\bibitem{img-segm}
+Image segmentation
+\url{https://www.cs.auckland.ac.nz/courses/compsci773s1c/lectures/ImageProcessing-html/topic3.htm}
+\bibitem{wyklady}
+prof. Przemysław Rokita. Wykłady z przedmiotu przetwarzanie obrazów cyfrowych
+
+\end{thebibliography}
+\end{document}

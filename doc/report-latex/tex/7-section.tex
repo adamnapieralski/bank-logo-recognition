@@ -1,0 +1,36 @@
+Wejściowy obraz zapisany jest w formacie \emph{RGB} (a właściwie \emph{BGR} - z racji wykorzystania wczytywania z użyciem biblioteki \emph{OpenCV}). W celu łatwiejszej selekcji interesujących pikseli na etapie progowania zdecydowano się na konwersję przestrzeni barw do przestrzeni \emph{HSV}.
+
+Zaimplementowany algorytm konwersji bazuje na odpowiadającej mu metodzie z \emph{OpenCV}.
+
+\begin{equation}
+    \label{eqn:value}
+    V = \max{(R, G, B)}
+\end{equation}
+
+Kolejnym krokiem algorytmu, jest obliczenie nasycenia koloru $S$, korzystając ze wzoru~\ref{eqn:saturation}.
+
+\begin{equation}
+    \label{eqn:saturation}
+    S = \left\{ 
+        \begin{array}{ll}
+            0, & V = 0 \\
+            \min{(R, G, B)}, & V \ne 0
+        \end{array} 
+        \right.
+\end{equation}
+
+Ostatnim krokiem algorytmu jest obliczenie barwy $H$~zgodnie z~wzorem~\ref{eqn:hue}.
+
+\begin{equation}
+    \label{eqn:hue}
+    H = \left\{ 
+        \begin{array}{ll}
+            \frac{(G - B) * 60^{\degree}}{V - \min{(R, G, B)}} + 60^{\degree}, & V = R \\
+            \frac{(B - R) * 60^{\degree}}{V - \min{(R, G, B)}} + 120\si{\degree}, & V = G \\
+            \frac{(R - G) * 60^{\degree}}{V - \min{(R, G, B)}} + 240^{\degree}, & V = B
+        \end{array} 
+        \right.
+\end{equation}
+Tak uzyskane wartości parametrów S i V zawierają się w przedziale $[0, 255]$, natomiast parametr H, z racji przechowywania go jako 8-bitowej liczby, skalowany jest z typowego zakresu $[0, 359]$ do $[0, 179]$.
+Operacja konwersji przestrzeni barw jest operacją punktową, przez co może być realizowana na każdym pikselu osobno, niezależnie od innych, sąsiednich.
+W programie za ten etap przetwarzania odpowiadają klasy: \emph{BGR2HSVConverter} i \emph{BGR2HSVPixelConverter}.

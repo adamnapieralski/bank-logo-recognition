@@ -20,6 +20,14 @@ namespace pobr::consts {
     const cv::Vec3b BINARY_PIXEL_BLACK = cv::Vec3b(BLACK, BLACK, BLACK);
 
     const double EPS = 10e-8;
+
+    const double lowpassFilterMatrix[3][3] = {
+        { 1./9, 1./9, 1./9 }, {1./9, 1./9, 1./9}, {1./9, 1./9, 1./9}
+    };
+
+    const double highpassFilterMatrix[3][3] = {
+        {-1., -1., -1.}, {-1., 8., -1.}, {-1., -1., -1.}
+    };
 }
 
 #endif //_PROCESSING_CONSTS_HPP_

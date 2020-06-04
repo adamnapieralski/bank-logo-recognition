@@ -1,0 +1,4 @@
+Found logos data
+id	x	y	w	h
+0	586	208	120	52
+1	213	233	99	48

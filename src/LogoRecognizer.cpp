@@ -1,5 +1,14 @@
+/**
+ * @file LogoRecognizer.cpp
+ * @brief Main class source code handling mBank logo recognition process using processing utilities provided.
+ * 
+ * @author Adam Napieralski
+ * @date 05.2020
+ */
+
 #include "../include/LogoRecognizer.h"
 #include "../include/processing/Utils.hpp"
+
 
 #include <fstream>
 
